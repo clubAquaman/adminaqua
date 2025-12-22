@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Panel Admin - Club Aquaman</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --naranja: #FF6B00;
+            --naranja-oscuro: #E65C00;
+            --naranja-claro: #FF8C42;
+            --negro: #000000;
+            --negro-claro: #1A1A1A;
+            --blanco: #FFFFFF;
+            --gris-claro: #F8F9FA;
+            --gris-medio: #E9ECEF;
+            --verde: #28a745;
+            --rojo: #dc3545;
+            --amarillo: #ffc107;
+            --azul: #007bff;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: var(--blanco);
+            min-height: 100vh;
+        }
+        
+        /* ===== LOGIN SCREEN ===== */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #000 0%, #222 100%);
+        }
+        
+        .login-container {
+            background: var(--negro-claro);
+            padding: 50px;
+            border-radius: 20px;
+            border: 3px solid var(--naranja);
+            box-shadow: 0 20px 60px rgba(255, 107, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+        }
+        
+        .login-logo {
+            color: var(--naranja);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--blanco);
+        }
+        
+        .login-subtitle {
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            background: #333;
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: var(--blanco);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: var(--naranja);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.3);
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
+            color: var(--blanco);
+            border: none;
+            padding: 18px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.4);
+        }
+        
+        .login-error {
+            color: var(--rojo);
+            margin-top: 15px;
+            display: none;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--rojo);
+        }
+        
+        /* ===== ADMIN PANEL ===== */
+        #admin-panel {
+            display: none;
+        }
+        
+        /* Navbar */
+        .admin-navbar {
+            background: var(--negro);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--naranja);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .navbar-brand h1 {
+            color: var(--naranja);
+            font-size: 1.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logout-btn {
+            background: var(--rojo);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* Sidebar */
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .admin-sidebar {
+            width: 250px;
+            background: var(--negro-claro);
+            border-right: 1px solid #333;
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            padding: 18px 25px;
+            color: #ccc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover {
+            background: #333;
+            color: white;
+        }
+        
+        .menu-item.active {
+            background: rgba(255, 107, 0, 0.1);
+            color: var(--naranja);
+            border-left-color: var(--naranja);
+        }
+        
+        .menu-item i {
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .admin-content {
+            flex: 1;
+            padding: 30px;
+            background: #111;
+            overflow-y: auto;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .section-header h2 {
+            color: var(--naranja);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--negro-claro);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border-top: 5px solid var(--naranja);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--naranja);
+            margin-bottom: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--blanco);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: var(--negro-claro);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .table-header {
+            padding: 20px;
+            background: #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #222;
+            color: var(--blanco);
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #333;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            color: #ccc;
+        }
+        
+        tr:hover {
+            background: #222;
+        }
+        
+        /* Badges */
+        .badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .badge-success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .badge-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        
+        .badge-danger {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        .badge-info {
+            background: rgba(0, 123, 255, 0.2);
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--naranja);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--naranja-oscuro);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--verde);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--rojo);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: #222;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--naranja);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--negro-claro);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 3px solid var(--naranja);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .modal-header h3 {
+            color: var(--naranja);
+            font-size: 1.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid var(--naranja);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .admin-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+            }
+            
+            .menu-item {
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+            
+            .menu-item.active {
+                border-left: none;
+                border-bottom-color: var(--naranja);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="login-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1 class="login-title">PANEL DE ADMINISTRACIÓN</h1>
+            <p class="login-subtitle">Club Deportivo Aquaman - Acceso Restringido</p>
+            
+            <input type="text" id="login-username" class="login-input" placeholder="Usuario" required>
+            <input type="password" id="login-password" class="login-input" placeholder="Contraseña" required>
+            
+            <div class="login-error" id="login-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-text">Credenciales incorrectas</span>
+            </div>
+            
+            <button class="login-btn" onclick="verificarLogin()">
+                <i class="fas fa-sign-in-alt"></i> INGRESAR AL PANEL
+            </button>
+            
+            <p style="margin-top: 30px; color: #666; font-size: 0.9rem;">
+                <i class="fas fa-lock"></i> Acceso exclusivo para personal autorizado
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN PANEL ===== -->
+    <div id="admin-panel">
+        <!-- Navbar -->
+        <nav class="admin-navbar">
+            <div class="navbar-brand">
+                <i class="fas fa-swimming-pool" style="color: var(--naranja); font-size: 1.8rem;"></i>
+                <h1>Club Aquaman - Panel Admin</h1>
+            </div>
+            <div class="user-info">
+                <span id="current-user">Administrador</span>
+                <button class="logout-btn" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Container -->
+        <div class="admin-container">
+            <!-- Sidebar -->
+            <div class="admin-sidebar">
+                <ul class="sidebar-menu">
+                    <li class="menu-item active" onclick="mostrarSeccion('dashboard')">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="menu-item" onclick="mostrarSeccion('competencias')">
+                        <i class="fas fa-trophy"></i>
+                        <span>Competencias</span>
+                    </li>
+                    <li class="menu-item" onclick="mostrarSeccion('participantes')">
+                        <i class="fas fa-users"></i>
+                        <span>Participantes</span>
+                    </li>
+                    <li class="menu-item" onclick="mostrarSeccion('inscripciones')">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Inscripciones</span>
+                    </li>
+                    <li class="menu-item" onclick="mostrarSeccion('pagos')">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Pagos</span>
+                    </li>
+                    <li class="menu-item" onclick="mostrarSeccion('reportes')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reportes</span>
+                    </li>
+                    <li class="menu-item" onclick="mostrarSeccion('configuracion')">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Content Area -->
+            <div class="admin-content">
+                <!-- Dashboard -->
+                <div id="dashboard" class="content-section active">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                        <div id="fecha-hora" style="color: #aaa;"></div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-number" id="stat-total-participantes">0</div>
+                            <div class="stat-label">Total Participantes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stat-number" id="stat-total-competencias">0</div>
+                            <div class="stat-label">Competencias Activas</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-number" id="stat-total-recaudado">$0</div>
+                            <div class="stat-label">Total Recaudado</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-number" id="stat-pendientes">0</div>
+                            <div class="stat-label">Pagos Pendientes</div>
+                        </div>
+                    </div>
+
+                    <!-- Últimas Inscripciones -->
+                    <div class="section-header" style="margin-top: 40px;">
+                        <h2><i class="fas fa-history"></i> Últimas Inscripciones</h2>
+                        <button class="btn btn-primary" onclick="mostrarSeccion('inscripciones')">
+                            <i class="fas fa-list"></i> Ver Todas
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 style="color: #ccc;">Registros Recientes</h3>
+                        </div>
+                        <div id="ultimas-inscripciones" class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando inscripciones...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competencias -->
+                <div id="competencias" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-trophy"></i> Gestión de Competencias</h2>
+                        <button class="btn btn-primary" onclick="abrirModalNuevaCompetencia()">
+                            <i class="fas fa-plus"></i> Nueva Competencia
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 style="color: #ccc;">Lista de Competencias</h3>
+                            <input type="text" placeholder="Buscar competencia..." 
+                                   style="padding: 8px 15px; background: #333; border: 1px solid #444; border-radius: 5px; color: white;">
+                        </div>
+                        <div id="lista-competencias" class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando competencias...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participantes -->
+                <div id="participantes" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> Gestión de Participantes</h2>
+                        <div>
+                            <button class="btn btn-primary" onclick="exportarParticipantes()">
+                                <i class="fas fa-file-excel"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div style="background: var(--negro-claro); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3 style="color: #ccc; margin-bottom: 15px;">Filtros de Búsqueda</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <input type="text" id="filtro-nombre" placeholder="Nombre o apellido" class="form-control">
+                            <input type="text" id="filtro-documento" placeholder="Documento" class="form-control">
+                            <select id="filtro-competencia" class="form-control">
+                                <option value="">Todas las competencias</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="filtrarParticipantes()">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div id="lista-participantes" class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando participantes...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inscripciones -->
+                <div id="inscripciones" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-list-alt"></i> Inscripciones por Categoría y Prueba</h2>
+                        <button class="btn btn-primary" onclick="generarReporteInscripciones()">
+                            <i class="fas fa-print"></i> Imprimir Reporte
+                        </button>
+                    </div>
+
+                    <!-- Filtros por Categoría y Prueba -->
+                    <div style="background: var(--negro-claro); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3 style="color: #ccc; margin-bottom: 15px;">Filtrar por Competencia</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <label class="form-label">Seleccionar Competencia</label>
+                                <select id="select-competencia" class="form-control" onchange="cargarCategoriasPruebas()">
+                                    <option value="">Selecciona una competencia</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Estado de Inscripción</label>
+                                <select id="select-estado" class="form-control" onchange="filtrarInscripciones()">
+                                    <option value="">Todos los estados</option>
+                                    <option value="confirmado">Confirmados</option>
+                                    <option value="pendiente_pago">Pendientes de pago</option>
+                                    <option value="preinscrito">Pre-inscritos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas por Categoría/Prueba -->
+                    <div id="estadisticas-inscripciones" style="display: none;">
+                        <!-- Aquí se mostrarán las estadísticas -->
+                    </div>
+
+                    <!-- Tabla de Inscripciones -->
+                    <div class="table-container">
+                        <div id="lista-inscripciones" class="loading">
+                            <div class="spinner"></div>
+                            <p>Selecciona una competencia para ver las inscripciones</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagos -->
+                <div id="pagos" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-credit-card"></i> Gestión de Pagos</h2>
+                        <div>
+                            <button class="btn btn-primary" onclick="verPagosPendientes()">
+                                <i class="fas fa-clock"></i> Ver Pendientes
+                            </button>
+                            <button class="btn btn-success" onclick="exportarPagos()">
+                                <i class="fas fa-file-excel"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 style="color: #ccc;">Historial de Pagos</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <select id="filtro-estado-pago" class="form-control" style="width: auto;" onchange="filtrarPagos()">
+                                    <option value="">Todos los estados</option>
+                                    <option value="pendiente">Pendientes</option>
+                                    <option value="verificado">Verificados</option>
+                                    <option value="rechazado">Rechazados</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="lista-pagos" class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando pagos...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes -->
+                <div id="reportes" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-bar"></i> Reportes y Estadísticas</h2>
+                        <button class="btn btn-primary" onclick="generarReporteCompleto()">
+                            <i class="fas fa-file-pdf"></i> Generar PDF
+                        </button>
+                    </div>
+
+                    <!-- Opciones de Reporte -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div class="stat-card" onclick="generarReporte('participantes')" style="cursor: pointer;">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-label">Reporte de Participantes</div>
+                        </div>
+                        <div class="stat-card" onclick="generarReporte('pagos')" style="cursor: pointer;">
+                            <div class="stat-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-label">Reporte de Pagos</div>
+                        </div>
+                        <div class="stat-card" onclick="generarReporte('inscripciones')" style="cursor: pointer;">
+                            <div class="stat-icon">
+                                <i class="fas fa-list-alt"></i>
+                            </div>
+                            <div class="stat-label">Reporte por Categoría</div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos -->
+                    <div id="contenido-reportes" class="loading">
+                        <div class="spinner"></div>
+                        <p>Selecciona un tipo de reporte</p>
+                    </div>
+                </div>
+
+                <!-- Configuración -->
+                <div id="configuracion" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-cog"></i> Configuración del Sistema</h2>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <!-- Configuración General -->
+                        <div style="background: var(--negro-claro); padding: 25px; border-radius: 15px;">
+                            <h3 style="color: #ccc; margin-bottom: 20px;">
+                                <i class="fas fa-info-circle"></i> Información del Club
+                            </h3>
+                            <div class="form-group">
+                                <label class="form-label">Nombre del Club</label>
+                                <input type="text" id="config-nombre-club" class="form-control" value="Club Deportivo Aquaman">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email de Contacto</label>
+                                <input type="email" id="config-email" class="form-control" value="info@clubaquaman.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" id="config-telefono" class="form-control" value="+57 300 123 4567">
+                            </div>
+                            <button class="btn btn-primary" onclick="guardarConfiguracion()">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+
+                        <!-- Configuración de Pagos -->
+                        <div style="background: var(--negro-claro); padding: 25px; border-radius: 15px;">
+                            <h3 style="color: #ccc; margin-bottom: 20px;">
+                                <i class="fas fa-credit-card"></i> Configuración de Pagos
+                            </h3>
+                            <div class="form-group">
+                                <label class="form-label">Número Nequi</label>
+                                <input type="text" id="config-nequi" class="form-control" placeholder="300 123 4567">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Número Daviplata</label>
+                                <input type="text" id="config-daviplata" class="form-control" placeholder="310 987 6543">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Puntos de Pago en Efectivo</label>
+                                <textarea id="config-puntos-pago" class="form-control" rows="3" placeholder="Complejo Acuático\nPlaza de Banderas"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cambiar Contraseña -->
+                    <div style="background: var(--negro-claro); padding: 25px; border-radius: 15px; margin-top: 30px;">
+                        <h3 style="color: #ccc; margin-bottom: 20px;">
+                            <i class="fas fa-key"></i> Cambiar Contraseña de Administrador
+                        </h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Contraseña Actual</label>
+                                <input type="password" id="pass-actual" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nueva Contraseña</label>
+                                <input type="password" id="pass-nueva" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirmar Nueva Contraseña</label>
+                                <input type="password" id="pass-confirmar" class="form-control">
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="cambiarContraseña()">
+                            <i class="fas fa-key"></i> Cambiar Contraseña
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODALES ===== -->
+    
+    <!-- Modal Ver Detalles -->
+    <div id="modal-detalles" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-titulo">Detalles</h3>
+                <button class="close-modal" onclick="cerrarModal()">×</button>
+            </div>
+            <div id="modal-contenido">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Competencia -->
+    <div id="modal-nueva-competencia" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Nueva Competencia</h3>
+                <button class="close-modal" onclick="cerrarModal()">×</button>
+            </div>
+            <div style="max-height: 70vh; overflow-y: auto;">
+                <form id="form-nueva-competencia">
+                    <div class="form-group">
+                        <label class="form-label">Nombre de la Competencia *</label>
+                        <input type="text" id="competencia-nombre" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tipo *</label>
+                            <select id="competencia-tipo" class="form-control" required>
+                                <option value="carrera">Carrera</option>
+                                <option value="natacion">Natación</option>
+                                <option value="torneo">Torneo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Fecha *</label>
+                            <input type="date" id="competencia-fecha" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ubicación</label>
+                        <input type="text" id="competencia-ubicacion" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Categorías (separadas por comas) *</label>
+                        <input type="text" id="competencia-categorias" class="form-control" 
+                               placeholder="Ej: Infantil 10-13, Juvenil 14-17, Adulto 18+" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Pruebas (separadas por comas) *</label>
+                        <input type="text" id="competencia-pruebas" class="form-control" 
+                               placeholder="Ej: 800m, 2.5K, 5K" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea id="competencia-descripcion" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn" onclick="cerrarModal()" 
+                                style="background: #666; color: white;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Crear Competencia
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+        // ================= CONFIGURACIÓN =================
+        // ESTOS DATOS DEBES CAMBIARLOS POR LOS TUYOS DE SUPABASE
+        const SUPABASE_CONFIG = {
+            url: 'https://mkfzbinjkanwebfyrmxa.supabase.co',
+            key: 'sb_publishable_JrHx-CSFPE83vpkrpH8gfQ_Hd18beG9'
+        };
+        
+        // Variables globales
+        let adminAutenticado = false;
+        let datosAdmin = {};
+        let supabaseCliente = null;
+
+        // ================= FUNCIONES DE LOGIN =================
+        
+        function verificarLogin() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            // Validaciones básicas
+            if (!username || !password) {
+                mostrarError('Por favor completa todos los campos');
+                return;
+            }
+            
+            // Credenciales por defecto (cámbialas después)
+            const credencialesValidas = [
+                { user: 'admin_aquaman', pass: 'Aquaman2026!' },
+                { user: 'admin', pass: 'admin123' }
+            ];
+            
+            // Verificar credenciales
+            const credencialValida = credencialesValidas.find(
+                cred => cred.user === username && cred.pass === password
+            );
+            
+            if (credencialValida) {
+                // Login exitoso
+                adminAutenticado = true;
+                datosAdmin = {
+                    username: username,
+                    nombre: 'Administrador Principal',
+                    nivel: 'superadmin'
+                };
+                
+                // Guardar en localStorage
+                localStorage.setItem('admin_logged', 'true');
+                localStorage.setItem('admin_data', JSON.stringify(datosAdmin));
+                
+                // Mostrar panel
+                mostrarPanelAdmin();
+                
+                // Inicializar Supabase (si hay configuración)
+                if (SUPABASE_CONFIG.url.includes('TU_ID')) {
+                    console.warn('⚠️ Configura tu URL y API Key de Supabase');
+                } else {
+                    inicializarSupabase();
+                }
+                
+            } else {
+                mostrarError('Usuario o contraseña incorrectos');
+            }
+        }
+        
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('login-error');
+            document.getElementById('error-text').textContent = mensaje;
+            errorDiv.style.display = 'block';
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function mostrarPanelAdmin() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            
+            // Mostrar nombre de usuario
+            document.getElementById('current-user').textContent = datosAdmin.nombre;
+            
+            // Actualizar fecha y hora
+            actualizarFechaHora();
+            setInterval(actualizarFechaHora, 60000);
+            
+            // Cargar datos iniciales
+            cargarDashboard();
+        }
+        
+        function cerrarSesion() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                adminAutenticado = false;
+                datosAdmin = {};
+                localStorage.removeItem('admin_logged');
+                localStorage.removeItem('admin_data');
+                
+                document.getElementById('admin-panel').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'flex';
+                
+                // Limpiar formularios
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+            }
+        }
+        
+        // ================= FUNCIONES DEL PANEL =================
+        
+        function mostrarSeccion(seccionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            
+            // Mostrar la seleccionada
+            document.getElementById(seccionId).classList.add('active');
+            
+            // Actualizar menú activo
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Encontrar y activar el ítem correspondiente
+            const menuItems = document.querySelectorAll('.menu-item');
+            for (let i = 0; i < menuItems.length; i++) {
+                if (menuItems[i].onclick && menuItems[i].onclick.toString().includes(seccionId)) {
+                    menuItems[i].classList.add('active');
+                    break;
+                }
+            }
+            
+            // Cargar datos específicos de la sección
+            switch(seccionId) {
+                case 'dashboard':
+                    cargarDashboard();
+                    break;
+                case 'competencias':
+                    cargarCompetencias();
+                    break;
+                case 'participantes':
+                    cargarParticipantes();
+                    break;
+                case 'inscripciones':
+                    cargarCompetenciasSelect();
+                    break;
+                case 'pagos':
+                    cargarPagos();
+                    break;
+                case 'reportes':
+                    cargarReportes();
+                    break;
+            }
+        }
+        
+        function actualizarFechaHora() {
+            const ahora = new Date();
+            const opciones = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('fecha-hora').textContent = 
+                ahora.toLocaleDateString('es-ES', opciones);
+        }
+        
+        // ================= DASHBOARD =================
+        
+        async function cargarDashboard() {
+            // Simular carga de datos
+            document.getElementById('stat-total-participantes').textContent = '0';
+            document.getElementById('stat-total-competencias').textContent = '0';
+            document.getElementById('stat-total-recaudado').textContent = '$0';
+            document.getElementById('stat-pendientes').textContent = '0';
+            
+            // Simular última inscripciones
+            const ultimasDiv = document.getElementById('ultimas-inscripciones');
+            ultimasDiv.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Participante</th>
+                            <th>Competencia</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #666;">
+                                <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                                <p>Conecta con Supabase para ver los datos reales</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        // ================= COMPETENCIAS =================
+        
+        function cargarCompetencias() {
+            const listaDiv = document.getElementById('lista-competencias');
+            listaDiv.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Ubicación</th>
+                            <th>Inscripciones</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Carrera por Papito Dios 2026</strong></td>
+                            <td><span class="badge badge-info">Carrera</span></td>
+                            <td>03/05/2026</td>
+                            <td>Cúcuta</td>
+                            <td>0</td>
+                            <td><span class="badge badge-success">Activa</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-small" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-success btn-small" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Torneo Internacional VII</strong></td>
+                            <td><span class="badge badge-info">Torneo</span></td>
+                            <td>30/04/2026</td>
+                            <td>Complejo Acuático</td>
+                            <td>0</td>
+                            <td><span class="badge badge-success">Activa</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-small" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-success btn-small" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        function abrirModalNuevaCompetencia() {
+            document.getElementById('modal-nueva-competencia').style.display = 'flex';
+        }
+        
+        // ================= PARTICIPANTES =================
+        
+        function cargarParticipantes() {
+            const listaDiv = document.getElementById('lista-participantes');
+            listaDiv.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Club</th>
+                            <th>Inscripciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                                <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                                <p>Los participantes aparecerán aquí cuando se registren desde el formulario público</p>
+                                <button class="btn btn-primary" onclick="mostrarSeccion('inscripciones')">
+                                    <i class="fas fa-arrow-right"></i> Ver Formulario de Inscripción
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        function filtrarParticipantes() {
+            // Implementar filtrado
+            console.log('Filtrando participantes...');
+        }
+        
+        function exportarParticipantes() {
+            alert('Esta función exportará todos los participantes a Excel cuando esté conectado a Supabase');
+        }
+        
+        // ================= INSCRIPCIONES =================
+        
+        function cargarCompetenciasSelect() {
+            const select = document.getElementById('select-competencia');
+            select.innerHTML = `
+                <option value="">Selecciona una competencia</option>
+                <option value="1">Carrera por Papito Dios 2026</option>
+                <option value="2">Torneo Internacional VII</option>
+            `;
+        }
+        
+        function cargarCategoriasPruebas() {
+            const competenciaId = document.getElementById('select-competencia').value;
+            
+            if (!competenciaId) {
+                document.getElementById('lista-inscripciones').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p>Selecciona una competencia para ver las inscripciones</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Mostrar estadísticas
+            document.getElementById('estadisticas-inscripciones').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Total Inscritos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">800m</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">2.5K</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">5K</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('estadisticas-inscripciones').style.display = 'block';
+            
+            // Mostrar tabla de inscripciones
+            document.getElementById('lista-inscripciones').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Participante</th>
+                            <th>Categoría</th>
+                            <th>Prueba</th>
+                            <th>Club</th>
+                            <th>Estado</th>
+                            <th>Pago</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                                <i class="fas fa-clipboard-list" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                                <p>Las inscripciones aparecerán aquí cuando los participantes se registren</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        function filtrarInscripciones() {
+            // Implementar filtrado
+            console.log('Filtrando inscripciones...');
+        }
+        
+        function generarReporteInscripciones() {
+            const competenciaId = document.getElementById('select-competencia').value;
+            if (!competenciaId) {
+                alert('Selecciona una competencia primero');
+                return;
+            }
+            
+            // Abrir ventana de impresión
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                <html>
+                <head>
+                    <title>Reporte de Inscripciones</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+                        th { background: #f5f5f5; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Club Deportivo Aquaman</h1>
+                        <h2>Reporte de Inscripciones</h2>
+                        <p>Generado: ${new Date().toLocaleDateString('es-ES')}</p>
+                    </div>
+                    <p>Reporte por categoría y prueba - Competencia seleccionada</p>
+                    <p>Conecta con Supabase para generar reportes reales</p>
+                </body>
+                </html>
+            `);
+            ventana.document.close();
+            ventana.print();
+        }
+        
+        // ================= PAGOS =================
+        
+        function cargarPagos() {
+            const listaDiv = document.getElementById('lista-pagos');
+            listaDiv.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Participante</th>
+                            <th>Competencia</th>
+                            <th>Monto</th>
+                            <th>Método</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                                <i class="fas fa-money-bill-wave" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                                <p>Los pagos aparecerán aquí cuando los participantes completen el proceso</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        function verPagosPendientes() {
+            // Implementar
+            alert('Mostrando pagos pendientes...');
+        }
+        
+        function exportarPagos() {
+            alert('Exportando pagos a Excel...');
+        }
+        
+        function filtrarPagos() {
+            // Implementar
+            console.log('Filtrando pagos...');
+        }
+        
+        // ================= REPORTES =================
+        
+        function cargarReportes() {
+            // Implementar
+        }
+        
+        function generarReporte(tipo) {
+            alert(`Generando reporte de ${tipo}...`);
+        }
+        
+        function generarReporteCompleto() {
+            alert('Generando reporte completo en PDF...');
+        }
+        
+        // ================= CONFIGURACIÓN =================
+        
+        function guardarConfiguracion() {
+            alert('Configuración guardada (simulado)');
+        }
+        
+        function cambiarContraseña() {
+            const actual = document.getElementById('pass-actual').value;
+            const nueva = document.getElementById('pass-nueva').value;
+            const confirmar = document.getElementById('pass-confirmar').value;
+            
+            if (!actual || !nueva || !confirmar) {
+                alert('Completa todos los campos');
+                return;
+            }
+            
+            if (nueva !== confirmar) {
+                alert('Las contraseñas nuevas no coinciden');
+                return;
+            }
+            
+            // Aquí iría la lógica para cambiar contraseña en Supabase
+            alert('Contraseña cambiada exitosamente');
+            
+            // Limpiar campos
+            document.getElementById('pass-actual').value = '';
+            document.getElementById('pass-nueva').value = '';
+            document.getElementById('pass-confirmar').value = '';
+        }
+        
+        // ================= MODALES =================
+        
+        function abrirModalDetalles(titulo, contenido) {
+            document.getElementById('modal-titulo').textContent = titulo;
+            document.getElementById('modal-contenido').innerHTML = contenido;
+            document.getElementById('modal-detalles').style.display = 'flex';
+        }
+        
+        function cerrarModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+        
+        // ================= SUPABASE =================
+        
+        function inicializarSupabase() {
+            // Inicializar cliente Supabase si hay configuración
+            if (window.supabase && SUPABASE_CONFIG.url && SUPABASE_CONFIG.key) {
+                supabaseCliente = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+                console.log('✅ Supabase inicializado');
+                
+                // Probar conexión
+                probarConexionSupabase();
+            }
+        }
+        
+        async function probarConexionSupabase() {
+            if (!supabaseCliente) return;
+            
+            try {
+                const { data, error } = await supabaseCliente
+                    .from('competencias')
+                    .select('count');
+                    
+                if (error) throw error;
+                
+                console.log('✅ Conexión a Supabase exitosa');
+            } catch (error) {
+                console.error('❌ Error conectando a Supabase:', error);
+            }
+        }
+        
+        // ================= INICIALIZACIÓN =================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si ya hay sesión activa
+            const logged = localStorage.getItem('admin_logged');
+            const adminData = localStorage.getItem('admin_data');
+            
+            if (logged === 'true' && adminData) {
+                try {
+                    datosAdmin = JSON.parse(adminData);
+                    adminAutenticado = true;
+                    mostrarPanelAdmin();
+                } catch (e) {
+                    localStorage.removeItem('admin_logged');
+                    localStorage.removeItem('admin_data');
+                }
+            }
+            
+            // Permitir login con Enter
+            document.getElementById('login-password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verificarLogin();
+                }
+            });
+            
+            // Cerrar modales con Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    cerrarModal();
+                }
+            });
+            
+            // Cerrar modal haciendo clic fuera
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        cerrarModal();
+                    }
+                });
+            });
+            
+            // Formulario nueva competencia
+            document.getElementById('form-nueva-competencia').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Competencia creada (simulado)');
+                cerrarModal();
+                cargarCompetencias();
+            });
+        });
+    </script>
+</body>
+</html>
